@@ -191,5 +191,5 @@ MIT — hacé lo que quieras con el código. Si lo usás, ¡compartí tus mejora
 ---
 
 <p align="center">
-  <sub>Hecho con ₿ en Argentina</sub>
+  <sub>Hecho con ₿</sub>
 </p>
