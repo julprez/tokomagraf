@@ -24,7 +24,7 @@ echo "  ╚═══════════════════════
 echo -e "${NC}"
 
 # ── 1. Verificar Docker ──────────────────────────────────────
-echo -e "${YELLOW}[1/7]${NC} Verificando Docker..."
+echo -e "${YELLOW}[1/8]${NC} Verificando Docker..."
 if ! command -v docker &>/dev/null; then
     echo "  Instalando Docker..."
     curl -fsSL https://get.docker.com | bash
@@ -35,8 +35,32 @@ if ! docker compose version &>/dev/null 2>&1; then
 fi
 echo -e "  ${GREEN}✓${NC} Docker listo"
 
-# ── 2. Configurar variables de entorno ────────────────────────
-echo -e "${YELLOW}[2/7]${NC} Configurando entorno..."
+# ── 1b. Configurar DNS de Docker (evita errores IPv6 en VPS) ─
+echo -e "${YELLOW}[2/8]${NC} Configurando DNS de Docker..."
+DOCKER_DAEMON="/etc/docker/daemon.json"
+mkdir -p /etc/docker
+if [ ! -f "$DOCKER_DAEMON" ] || ! grep -q '"dns"' "$DOCKER_DAEMON" 2>/dev/null; then
+    # Backup if existing
+    [ -f "$DOCKER_DAEMON" ] && cp "$DOCKER_DAEMON" "${DOCKER_DAEMON}.bak.$(date +%s)"
+    cat > "$DOCKER_DAEMON" << 'DAEMONEOF'
+{
+  "dns": ["8.8.8.8", "1.1.1.1"],
+  "ipv6": false
+}
+DAEMONEOF
+    systemctl restart docker 2>/dev/null || service docker restart 2>/dev/null || true
+    # Wait for Docker to be ready
+    for i in $(seq 1 15); do
+        if docker info >/dev/null 2>&1; then break; fi
+        sleep 1
+    done
+    echo -e "  ${GREEN}✓${NC} Docker configurado con DNS 8.8.8.8 / 1.1.1.1 (IPv6 deshabilitado)"
+else
+    echo -e "  ${GREEN}✓${NC} DNS de Docker ya configurado"
+fi
+
+# ── 3. Configurar variables de entorno ────────────────────────
+echo -e "${YELLOW}[3/8]${NC} Configurando entorno..."
 if [ ! -f .env ]; then
     if [ -f .env.example ]; then
         cp .env.example .env
@@ -51,8 +75,8 @@ else
     echo -e "  ${GREEN}✓${NC} Archivo .env ya existe"
 fi
 
-# ── 3. Preguntar dominio ─────────────────────────────────────
-echo -e "${YELLOW}[3/7]${NC} Configuración de dominio"
+# ── 4. Preguntar dominio ─────────────────────────────────────
+echo -e "${YELLOW}[4/8]${NC} Configuración de dominio"
 echo ""
 echo "  Si tenés un dominio, Caddy obtiene SSL automático (HTTPS)."
 echo "  Si no, se usa HTTP simple con la IP del servidor."
@@ -69,8 +93,8 @@ else
     echo -e "  ${GREEN}✓${NC} Se usará solo HTTP con la IP del servidor"
 fi
 
-# ── 4. Abrir puertos en firewall ──────────────────────────────
-echo -e "${YELLOW}[4/7]${NC} Configurando firewall..."
+# ── 5. Abrir puertos en firewall ──────────────────────────────
+echo -e "${YELLOW}[5/8]${NC} Configurando firewall..."
 if command -v ufw &>/dev/null; then
     ufw allow 80/tcp 2>/dev/null || true
     ufw allow 443/tcp 2>/dev/null || true
@@ -84,13 +108,13 @@ else
     echo -e "  ${YELLOW}⚠${NC} No se detectó firewall. Asegurate de abrir puertos 80 y 443 manualmente"
 fi
 
-# ── 5. Construir e iniciar ────────────────────────────────────
-echo -e "${YELLOW}[5/7]${NC} Construyendo e iniciando tokomagraf..."
+# ── 6. Construir e iniciar ────────────────────────────────────
+echo -e "${YELLOW}[6/8]${NC} Construyendo e iniciando tokomagraf..."
 echo "  Esto puede tardar unos minutos la primera vez..."
 docker compose -f docker-compose.prod.yml up -d --build 2>&1 | tail -5
 
-# ── 6. Configurar backup automático ───────────────────────────
-echo -e "${YELLOW}[6/7]${NC} Configurando backup automático (diario, 7 días de retención)..."
+# ── 7. Configurar backup automático ───────────────────────────
+echo -e "${YELLOW}[7/8]${NC} Configurando backup automático (diario, 7 días de retención)..."
 chmod +x backup.sh
 # Agregar a cron si no existe
 CRON_JOB="0 3 * * * cd $(pwd) && bash backup.sh >> backups/backup.log 2>&1"
@@ -103,8 +127,8 @@ fi
 mkdir -p backups
 echo -e "  ${GREEN}✓${NC} Backups se guardan en ./backups/ (7 días de retención)"
 
-# ── 7. Esperar a que Caddy obtenga SSL ────────────────────────
-echo -e "${YELLOW}[7/7]${NC} Esperando que los servicios estén listos..."
+# ── 8. Esperar a que Caddy obtenga SSL ────────────────────────
+echo -e "${YELLOW}[8/8]${NC} Esperando que los servicios estén listos..."
 sleep 5
 
 # ── Mostrar info de acceso ────────────────────────────────────
