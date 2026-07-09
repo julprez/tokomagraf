@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  /* ── Card Container ── */
+  .card {
+    width: 420px;
+    background: linear-gradient(145deg, #111827, #0f172a);
+    border-radius: 20px;
+    padding: 32px;
+    border: 1px solid #1e293b;
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.5),
+      0 10px 15px -3px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Glow accent */
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -80px;
+    right: -80px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(247, 147, 26, 0.08) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .card::after {
+    content: '';
+    position: absolute;
+    bottom: -60px;
+    left: -60px;
+    width: 160px;
+    height: 160px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.06) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-bottom: 24px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .asset-icon {
+    width: 44px;
+    height: 44px;
+    background: linear-gradient(135deg, #f7931a, #e67e22);
+    border-radius: 12px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 24px;
+    font-weight: 800;
+    color: #0f172a;
+    box-shadow: 0 4px 12px rgba(247, 147, 26, 0.2);
+  }
+
+  .header-info {
+    flex: 1;
+  }
+
+  .header-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: #94a3b8;
+    text-transform: uppercase;
+    letter-spacing: 0.8px;
+  }
+
+  .header-subtitle {
+    font-size: 12px;
+    color: #475569;
+  }
+
+  .badge {
+    background: rgba(247, 147, 26, 0.12);
+    color: #f7931a;
+    font-size: 11px;
+    font-weight: 600;
+    padding: 4px 10px;
+    border-radius: 20px;
+    border: 1px solid rgba(247, 147, 26, 0.2);
+  }
+
+  /* ── Price Display ── */
+  .price-section {
+    text-align: center;
+    padding: 20px 0;
+    position: relative;
+    z-index: 1;
+  }
+
+  .price-label {
+    font-size: 12px;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 1px;
+    margin-bottom: 8px;
+  }
+
+  .price-value {
+    font-size: 52px;
+    font-weight: 800;
+    color: #f1f5f9;
+    letter-spacing: -1.5px;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .price-value .currency {
+    font-size: 24px;
+    color: #64748b;
+    font-weight: 500;
+    vertical-align: super;
+  }
+
+  /* ── Change Badge ── */
+  .change-section {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 12px;
+    margin-top: 16px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .change-badge {
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 6px 16px;
+    border-radius: 20px;
+    font-size: 16px;
+    font-weight: 700;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .change-badge.positive {
+    color: #10b981;
+    background: rgba(16, 185, 129, 0.1);
+    border: 1px solid rgba(16, 185, 129, 0.2);
+  }
+
+  .change-badge.negative {
+    color: #ef4444;
+    background: rgba(239, 68, 68, 0.1);
+    border: 1px solid rgba(239, 68, 68, 0.2);
+  }
+
+  .change-badge.neutral {
+    color: #94a3b8;
+    background: rgba(148, 163, 184, 0.1);
+    border: 1px solid rgba(148, 163, 184, 0.2);
+  }
+
+  .change-arrow {
+    font-size: 14px;
+  }
+
+  .change-label {
+    font-size: 12px;
+    color: #475569;
+  }
+
+  /* ── Mini Stats Row ── */
+  .stats-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+    margin-top: 24px;
+    padding-top: 20px;
+    border-top: 1px solid #1e293b;
+    position: relative;
+    z-index: 1;
+  }
+
+  .stat-item {
+    text-align: center;
+  }
+
+  .stat-label {
+    font-size: 11px;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+    margin-bottom: 4px;
+  }
+
+  .stat-value {
+    font-size: 14px;
+    font-weight: 600;
+    color: #cbd5e1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 20px;
+    padding-top: 16px;
+    border-top: 1px solid #1e293b;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-brand {
+    font-size: 12px;
+    color: #475569;
+    font-weight: 500;
+  }
+
+  .footer-brand strong {
+    color: #f7931a;
+  }
+
+  .footer-time {
+    font-size: 11px;
+    color: #334155;
+    font-variant-numeric: tabular-nums;
+  }
+
+  /* ── Sparkline (tiny visual bar) ── */
+  .sparkline-bar {
+    width: 100%;
+    height: 3px;
+    border-radius: 2px;
+    margin-top: 20px;
+    background: linear-gradient(90deg, #1e293b 0%, #334155 100%);
+    position: relative;
+    z-index: 1;
+    overflow: hidden;
+  }
+
+  .sparkline-fill {
+    height: 100%;
+    border-radius: 2px;
+    transition: width 0.5s ease;
+  }
+
+  .sparkline-fill.positive {
+    background: linear-gradient(90deg, #10b981, #34d399);
+  }
+
+  .sparkline-fill.negative {
+    background: linear-gradient(90deg, #ef4444, #f87171);
+  }
+
+  .sparkline-fill.neutral {
+    background: linear-gradient(90deg, #64748b, #94a3b8);
+  }
+</style>
+</head>
+<body>
+  <div class="card" id="priceCard">
+    <!-- Header -->
+    <div class="header">
+      <div class="asset-icon">₿</div>
+      <div class="header-info">
+        <div class="header-title">Bitcoin</div>
+        <div class="header-subtitle">BTC / USD</div>
+      </div>
+      <span class="badge">● Live</span>
+    </div>
+
+    <!-- Price -->
+    <div class="price-section">
+      <div class="price-label">Precio Actual</div>
+      <div class="price-value">
+        {{price_raw | usd}}
+      </div>
+    </div>
+
+    <!-- Change -->
+    <div class="change-section">
+      <div class="change-badge {{change_class}}">
+        <span class="change-arrow">{{change_arrow}}</span>
+        {{change_pct}}%
+      </div>
+      <span class="change-label">24h cambio</span>
+    </div>
+
+    <!-- Mini Stats -->
+    <div class="stats-row">
+      <div class="stat-item">
+        <div class="stat-label">Máx 24h</div>
+        <div class="stat-value">{{high_24h_raw | usd}}</div>
+      </div>
+      <div class="stat-item">
+        <div class="stat-label">Mín 24h</div>
+        <div class="stat-value">{{low_24h_raw | usd}}</div>
+      </div>
+    </div>
+
+    <!-- Sparkline -->
+    <div class="sparkline-bar">
+      <div class="sparkline-fill {{change_class}}" style="width: {{spark_width}}%"></div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-brand">🟠 <strong>tokomagraf</strong></div>
+      <div class="footer-time">{{timestamp}}</div>
+    </div>
+  </div>
+</body>
+</html>

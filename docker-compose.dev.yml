@@ -1,0 +1,85 @@
+# ============================================================
+# docker-compose.dev.yml — tokomagraf Desarrollo
+#
+# Uso:
+#   docker compose -f docker-compose.dev.yml up -d
+#
+# Características:
+#   - Sin Caddy (puertos expuestos directamente)
+#   - Hot-reload en frontend (Vite HMR) y backend (uvicorn --reload)
+#   - Volumes montados para cambios en vivo
+#   - DB y Redis con datos persistentes
+# ============================================================
+
+services:
+  db:
+    image: postgres:16-alpine
+    restart: unless-stopped
+    environment:
+      POSTGRES_DB: tokomagraf
+      POSTGRES_USER: tokomagraf
+      POSTGRES_PASSWORD: ${DB_PASSWORD:-devpassword}
+    ports:
+      - "5432:5432"  # Expuesto para herramientas como DBeaver
+    volumes:
+      - dev_postgres_data:/var/lib/postgresql/data
+
+  redis:
+    image: redis:7-alpine
+    restart: unless-stopped
+    ports:
+      - "6379:6379"  # Expuesto para debugging
+    volumes:
+      - dev_redis_data:/data
+
+  backend:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8000:8000"
+    environment:
+      DATABASE_URL: postgresql://tokomagraf:${DB_PASSWORD:-devpassword}@db:5432/tokomagraf
+      JWT_SECRET: ${JWT_SECRET:-dev-secret}
+      FRONTEND_URL: http://localhost:5173
+    volumes:
+      - ./backend:/app  # Hot-reload: cambios en vivo sin rebuild
+    depends_on:
+      - db
+      - redis
+
+  worker:
+    build:
+      context: ./backend
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    command: celery -A app.tasks.worker worker --loglevel=info
+    environment:
+      DATABASE_URL: postgresql://tokomagraf:${DB_PASSWORD:-devpassword}@db:5432/tokomagraf
+      JWT_SECRET: ${JWT_SECRET:-dev-secret}
+    volumes:
+      - ./backend:/app
+    depends_on:
+      - db
+      - redis
+
+  frontend:
+    build:
+      context: ./frontend
+      dockerfile: Dockerfile.dev
+    restart: unless-stopped
+    ports:
+      - "5173:5173"  # Vite dev server
+    environment:
+      VITE_API_URL: http://localhost:8000/api
+    volumes:
+      - ./frontend/src:/app/src  # Hot-reload: solo código fuente
+      - ./frontend/index.html:/app/index.html
+      - ./frontend/vite.config.ts:/app/vite.config.ts
+    depends_on:
+      - backend
+
+volumes:
+  dev_postgres_data:
+  dev_redis_data:

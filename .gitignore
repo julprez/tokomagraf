@@ -1,0 +1,36 @@
+# ── Dependencias ──
+node_modules/
+__pycache__/
+*.py[cod]
+*.egg-info/
+.venv/
+venv/
+
+# ── Build ──
+dist/
+build/
+*.tsbuildinfo
+
+# ── Entorno ──
+.env
+.env.local
+
+# ── Backups ──
+backups/
+
+# ── Docker ──
+docker-compose.override.yml
+
+# ── IDE ──
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# ── OS ──
+.DS_Store
+Thumbs.db
+
+# ── Datos ──
+*.db
+*.sqlite

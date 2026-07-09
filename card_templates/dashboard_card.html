@@ -1,0 +1,450 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+
+  body {
+    font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Inter', Roboto, sans-serif;
+    background: transparent;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 100vh;
+    padding: 20px;
+  }
+
+  .card {
+    width: 520px;
+    background: linear-gradient(145deg, #0b1121, #0f172a);
+    border-radius: 24px;
+    padding: 28px;
+    border: 1px solid #1e293b;
+    box-shadow:
+      0 4px 6px -1px rgba(0, 0, 0, 0.5),
+      0 10px 15px -3px rgba(0, 0, 0, 0.4),
+      inset 0 1px 0 rgba(255, 255, 255, 0.05);
+    position: relative;
+    overflow: hidden;
+  }
+
+  /* Glow accents */
+  .card::before {
+    content: '';
+    position: absolute;
+    top: -120px;
+    right: -120px;
+    width: 300px;
+    height: 300px;
+    background: radial-gradient(circle, rgba(247, 147, 26, 0.06) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  .card::after {
+    content: '';
+    position: absolute;
+    bottom: -80px;
+    left: -80px;
+    width: 200px;
+    height: 200px;
+    background: radial-gradient(circle, rgba(59, 130, 246, 0.04) 0%, transparent 70%);
+    border-radius: 50%;
+    pointer-events: none;
+  }
+
+  /* ── Header ── */
+  .header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-bottom: 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .header-left {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+  }
+
+  .header-icon {
+    width: 36px;
+    height: 36px;
+    background: linear-gradient(135deg, #f7931a, #e67e22);
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    font-size: 18px;
+    color: #0f172a;
+    box-shadow: 0 4px 10px rgba(247, 147, 26, 0.2);
+  }
+
+  .header-title {
+    font-size: 14px;
+    font-weight: 700;
+    color: #e2e8f0;
+    letter-spacing: 0.3px;
+  }
+
+  .header-title small {
+    font-weight: 400;
+    color: #64748b;
+    font-size: 12px;
+  }
+
+  .header-badge {
+    background: rgba(16, 185, 129, 0.1);
+    color: #10b981;
+    font-size: 10px;
+    font-weight: 600;
+    padding: 3px 8px;
+    border-radius: 12px;
+    border: 1px solid rgba(16, 185, 129, 0.2);
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+  }
+
+  /* ── Valor total ── */
+  .value-section {
+    text-align: center;
+    padding: 16px 0 20px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .value-label {
+    font-size: 11px;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 1.5px;
+    margin-bottom: 6px;
+  }
+
+  .value-amount {
+    font-size: 44px;
+    font-weight: 800;
+    color: #f1f5f9;
+    letter-spacing: -1px;
+    line-height: 1.1;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .value-amount .currency {
+    font-size: 20px;
+    color: #64748b;
+    font-weight: 500;
+    vertical-align: super;
+  }
+
+  .value-change {
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+    margin-top: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    font-variant-numeric: tabular-nums;
+    padding: 4px 12px;
+    border-radius: 16px;
+  }
+
+  .value-change.positive { color: #10b981; background: rgba(16, 185, 129, 0.1); }
+  .value-change.negative { color: #ef4444; background: rgba(239, 68, 68, 0.1); }
+  .value-change.neutral  { color: #94a3b8; background: rgba(148, 163, 184, 0.1); }
+
+  .rec-badge {
+    display: inline-block;
+    margin-top: 10px;
+    padding: 5px 16px;
+    border-radius: 20px;
+    font-size: 13px;
+    font-weight: 700;
+    letter-spacing: 0.3px;
+  }
+
+  .rec-badge.buy   { background: rgba(16, 185, 129, 0.12); color: #34d399; border: 1px solid rgba(16, 185, 129, 0.25); }
+  .rec-badge.hold  { background: rgba(234, 179, 8, 0.12);  color: #fbbf24; border: 1px solid rgba(234, 179, 8, 0.25); }
+  .rec-badge.sell  { background: rgba(239, 68, 68, 0.12);  color: #f87171; border: 1px solid rgba(239, 68, 68, 0.25); }
+
+  /* ── Grid de métricas ── */
+  .grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 1px;
+    background: #1e293b;
+    border-radius: 12px;
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    margin-top: 16px;
+    border: 1px solid #1e293b;
+  }
+
+  .grid-item {
+    background: #0f172a;
+    padding: 12px 14px;
+  }
+
+  .grid-label {
+    font-size: 10px;
+    color: #475569;
+    text-transform: uppercase;
+    letter-spacing: 0.6px;
+    margin-bottom: 2px;
+  }
+
+  .grid-value {
+    font-size: 15px;
+    font-weight: 700;
+    color: #e2e8f0;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .grid-value.positive { color: #10b981; }
+  .grid-value.negative { color: #ef4444; }
+  .grid-value.muted    { color: #94a3b8; }
+  .grid-value.small    { font-size: 13px; }
+
+  /* ── Progreso hacia objetivo ── */
+  .progress-section {
+    margin-top: 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .progress-header {
+    display: flex;
+    justify-content: space-between;
+    font-size: 11px;
+    color: #64748b;
+    margin-bottom: 6px;
+  }
+
+  .progress-header strong {
+    color: #94a3b8;
+  }
+
+  .progress-bar {
+    width: 100%;
+    height: 6px;
+    background: #1e293b;
+    border-radius: 3px;
+    overflow: hidden;
+  }
+
+  .progress-fill {
+    height: 100%;
+    border-radius: 3px;
+    transition: width 0.8s ease;
+  }
+
+  .progress-fill.low    { background: linear-gradient(90deg, #ef4444, #f87171); }
+  .progress-fill.medium { background: linear-gradient(90deg, #f59e0b, #fbbf24); }
+  .progress-fill.high   { background: linear-gradient(90deg, #10b981, #34d399); }
+  .progress-fill.target { background: linear-gradient(90deg, #10b981, #06b6d4); }
+
+  /* ── Recomendación ── */
+  .rec-section {
+    margin-top: 16px;
+    padding: 16px;
+    background: linear-gradient(135deg, rgba(247, 147, 26, 0.04), rgba(59, 130, 246, 0.04));
+    border: 1px solid rgba(247, 147, 26, 0.12);
+    border-radius: 14px;
+    position: relative;
+    z-index: 1;
+  }
+
+  .rec-title {
+    font-size: 16px;
+    font-weight: 700;
+    margin-bottom: 6px;
+  }
+
+  .rec-title.buy  { color: #34d399; }
+  .rec-title.hold { color: #fbbf24; }
+  .rec-title.sell { color: #f87171; }
+
+  .rec-text {
+    font-size: 12.5px;
+    color: #94a3b8;
+    line-height: 1.6;
+  }
+
+  /* ── Footer ── */
+  .footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    margin-top: 16px;
+    padding-top: 14px;
+    border-top: 1px solid #1e293b;
+    position: relative;
+    z-index: 1;
+  }
+
+  .footer-brand {
+    font-size: 11px;
+    color: #475569;
+  }
+
+  .footer-brand strong {
+    color: #f7931a;
+  }
+
+  .footer-time {
+    font-size: 10px;
+    color: #334155;
+    font-variant-numeric: tabular-nums;
+  }
+
+  .footer-trades {
+    font-size: 10px;
+    color: #334155;
+  }
+
+  /* ── Separator in full-width items ── */
+  .full-width {
+    grid-column: 1 / -1;
+  }
+
+  .divider {
+    border: none;
+    border-top: 1px solid #1e293b;
+    margin: 0;
+    grid-column: 1 / -1;
+  }
+
+  /* ── Price change in header ── */
+  .price-change {
+    display: inline-flex;
+    align-items: center;
+    gap: 3px;
+    font-size: 12px;
+    font-weight: 500;
+    font-variant-numeric: tabular-nums;
+  }
+  .price-change.up   { color: #10b981; }
+  .price-change.down { color: #ef4444; }
+</style>
+</head>
+<body>
+  <div class="card" id="dashboardCard">
+    <!-- Header -->
+    <div class="header">
+      <div class="header-left">
+        <div class="header-icon">🟠</div>
+        <div class="header-title">
+          tokomagraf <small>· Panel de Cartera</small>
+        </div>
+      </div>
+      <span class="header-badge">● Live</span>
+    </div>
+
+    <!-- Total Value -->
+    <div class="value-section">
+      <div class="value-label">Patrimonio Total</div>
+      <div class="value-amount">
+        {{total_value_str}}
+      </div>
+      <div class="value-change {{pnl_class}}">
+        {{pnl_arrow}} {{total_pnl_pct_str}} · {{pnl_absolute_str}}
+      </div>
+      <div class="rec-badge {{rec_class}}">{{recommendation}}</div>
+    </div>
+
+    <!-- Grid: Balances & Capital -->
+    <div class="grid">
+      <div class="grid-item">
+        <div class="grid-label">₿ BTC</div>
+        <div class="grid-value">{{btc_balance_str}}</div>
+      </div>
+      <div class="grid-item">
+        <div class="grid-label">$ USDC</div>
+        <div class="grid-value">{{usdc_balance_str}}</div>
+      </div>
+      <div class="grid-item">
+        <div class="grid-label">Capital Aportado</div>
+        <div class="grid-value muted small">{{total_invested_str}}</div>
+      </div>
+      <div class="grid-item">
+        <div class="grid-label">P&L Total</div>
+        <div class="grid-value {{pnl_class}} small">{{total_pnl_pct_str}}</div>
+      </div>
+    </div>
+
+    <!-- Grid: Precios -->
+    <div class="grid" style="margin-top: 8px;">
+      <div class="grid-item">
+        <div class="grid-label">Precio Medio BTC</div>
+        <div class="grid-value small">{{avg_price_str}}</div>
+      </div>
+      <div class="grid-item">
+        <div class="grid-label">Precio Actual</div>
+        <div class="grid-value small">
+          {{current_price_str}}
+          <span class="price-change {{btc_change_class}}">{{btc_change_str}}</span>
+        </div>
+      </div>
+      <div class="grid-item">
+        <div class="grid-label">Precio Objetivo</div>
+        <div class="grid-value small">{{target_price_str}}</div>
+      </div>
+      <div class="grid-item">
+        <div class="grid-label">Target %</div>
+        <div class="grid-value small muted">+{{target_pct_str}}</div>
+      </div>
+    </div>
+
+    <!-- Progress Bar -->
+    <div class="progress-section">
+      <div class="progress-header">
+        <span>Progreso hacia objetivo</span>
+        <span><strong>{{progress_str}}</strong></span>
+      </div>
+      <div class="progress-bar">
+        <div class="progress-fill {{progress_class}}" style="width: {{progress_width}}%"></div>
+      </div>
+    </div>
+
+    <!-- Grid: Profits -->
+    {% if has_profits %}
+    <div class="grid" style="margin-top: 8px;">
+      <div class="grid-item">
+        <div class="grid-label">📈 Hoy</div>
+        <div class="grid-value {{daily_class}} small">{{daily_profit_str}}</div>
+      </div>
+      <div class="grid-item">
+        <div class="grid-label">📆 Este Mes</div>
+        <div class="grid-value {{monthly_class}} small">{{monthly_profit_str}}</div>
+      </div>
+      <div class="grid-item">
+        <div class="grid-label">💰 P&L Total</div>
+        <div class="grid-value {{pnl_class}} small">{{pnl_absolute_str}}</div>
+      </div>
+      <div class="grid-item">
+        <div class="grid-label">📊 Anualizado</div>
+        <div class="grid-value {{annual_class}} small">{{annualized_str}}</div>
+      </div>
+    </div>
+    {% endif %}
+
+    <!-- Recommendation -->
+    <div class="rec-section">
+      <div class="rec-title {{rec_class}}">{{recommendation}}</div>
+      <div class="rec-text">{{recommendation_explanation}}</div>
+    </div>
+
+    <!-- Footer -->
+    <div class="footer">
+      <div class="footer-brand">🟠 <strong>tokomagraf</strong></div>
+      <div class="footer-trades">📋 {{trade_count}} trades · desde {{first_trade_date}}</div>
+      <div class="footer-time">{{timestamp}}</div>
+    </div>
+  </div>
+</body>
+</html>
