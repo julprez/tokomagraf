@@ -1,13 +1,34 @@
 # 🪙 tokomagraf — Gestor de Cartera Cripto BTC
 
 <p align="center">
+  <a href="https://github.com/julprez/tokomagraf/actions"><img src="https://github.com/julprez/tokomagraf/actions/workflows/ci.yml/badge.svg" alt="CI"></a>
   <img src="https://img.shields.io/badge/status-stable-success?style=flat-square" alt="Status">
   <img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License">
   <img src="https://img.shields.io/badge/PRs-welcome-brightgreen?style=flat-square" alt="PRs Welcome">
   <img src="https://img.shields.io/badge/docker-ready-2496ED?logo=docker&logoColor=white&style=flat-square" alt="Docker">
+  <img src="https://img.shields.io/badge/release-v1.0.0-8A2BE2?style=flat-square" alt="Release">
 </p>
 
 **tokomagraf** es una aplicación web para gestionar tu cartera de Bitcoin. Registrá operaciones, visualizá gráficos, simulá escenarios, compará tu estrategia contra DCA, y recibí predicciones de mercado — todo en un dashboard dark mode responsive.
+
+---
+
+## 📸 Screenshots
+
+<p align="center">
+  <img src="screenshots/dashboard.png" alt="Dashboard" width="48%">
+  <img src="screenshots/operations.png" alt="Operaciones" width="48%">
+</p>
+<p align="center">
+  <img src="screenshots/dca.png" alt="Simulador DCA" width="48%">
+  <img src="screenshots/predictions.png" alt="Predicciones" width="48%">
+</p>
+<p align="center">
+  <img src="screenshots/history.png" alt="Historial" width="48%">
+  <img src="screenshots/alerts.png" alt="Alertas" width="48%">
+</p>
+
+> 💡 **Tip:** Hacé clic en cualquier imagen para verla en tamaño completo.
 
 ---
 
@@ -31,7 +52,7 @@
 ## 🚀 Instalación (un comando)
 
 ```bash
-curl -sSL https://raw.githubusercontent.com/TU-USUARIO/tokomagraf/main/install-remote.sh | bash
+curl -sSL https://raw.githubusercontent.com/julprez/tokomagraf/main/install-remote.sh | bash
 ```
 
 El instalador automáticamente:
@@ -47,7 +68,7 @@ Si no tenés dominio, el instalador funciona igual con HTTP en la IP del VPS.
 
 ### Manual (desarrollo)
 ```bash
-git clone https://github.com/TU-USUARIO/tokomagraf.git
+git clone https://github.com/julprez/tokomagraf.git
 cd tokomagraf
 docker compose -f docker-compose.dev.yml up -d
 # Frontend: http://localhost:5173
@@ -121,13 +142,14 @@ tokomagraf/
 │   │   ├── models/        # SQLAlchemy models
 │   │   └── tasks/         # Celery workers
 │   └── Dockerfile
-├── docker-compose.yml         # Desarrollo
+├── screenshots/               # Screenshots de la app
 ├── docker-compose.prod.yml    # Producción (Caddy + SSL)
 ├── docker-compose.dev.yml     # Desarrollo (hot-reload)
 ├── Caddyfile                  # Configuración SSL
 ├── install.sh                 # Instalador interactivo
 ├── install-remote.sh          # Instalador remoto (curl | bash)
 ├── backup.sh                  # Backup diario PostgreSQL
+├── .github/workflows/ci.yml   # CI: typecheck + lint + tests
 └── .env.example               # Template de variables
 ```
 
