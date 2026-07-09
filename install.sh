@@ -57,7 +57,7 @@ echo ""
 echo "  Si tenés un dominio, Caddy obtiene SSL automático (HTTPS)."
 echo "  Si no, se usa HTTP simple con la IP del servidor."
 echo ""
-read -p "  ¿Tenés un dominio? (dejá vacío para usar solo IP): " DOMAIN
+read -p "  ¿Tenés un dominio? (dejá vacío para usar solo IP): " DOMAIN < /dev/tty
 if [ -n "$DOMAIN" ]; then
     # Ensure domain doesn't have http:// prefix
     DOMAIN=$(echo "$DOMAIN" | sed 's|^https\?://||' | sed 's|/.*||')
