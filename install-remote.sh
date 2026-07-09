@@ -3,7 +3,7 @@
 # install-remote.sh — Instalador remoto de tokomagraf
 #
 # Uso (desde cualquier VPS limpio):
-#   curl -sSL https://raw.githubusercontent.com/TU-USUARIO/tokomagraf/main/install-remote.sh | bash
+#   curl -sSL https://raw.githubusercontent.com/julprez/tokomagraf/main/install-remote.sh | bash
 #
 # O si tenés tu propio dominio:
 #   curl -sSL https://tokomagraf.com/install.sh | bash
