@@ -33,7 +33,7 @@ fi
 
 # ── 1. Clonar el repositorio ─────────────────────────────────
 # ── CAMBIAR POR TU REPO ──────────────────────────────────
-REPO_URL="https://github.com/TU-USUARIO/tokomagraf.git"
+REPO_URL="https://github.com/julprez/tokomagraf.git"
 # ─────────────────────────────────────────────────────────
 echo -e "${YELLOW}[1]${NC} Clonando tokomagraf..."
 if [ -d "tokomagraf" ]; then
