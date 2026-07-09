@@ -53,7 +53,7 @@ jobs:
       - name: Lint (Ruff)
         run: |
           pip install ruff
-          ruff check backend/ tests/ --output-format=github
+          ruff check . --output-format=github
 
       - name: Pytest
         run: python -m pytest tests/ -v
