@@ -32,7 +32,9 @@ if ! command -v git &>/dev/null; then
 fi
 
 # ── 1. Clonar el repositorio ─────────────────────────────────
-REPO_URL="${REPO_URL:-https://github.com/TU-USUARIO/tokomagraf.git}"
+# ── CAMBIAR POR TU REPO ──────────────────────────────────
+REPO_URL="https://github.com/TU-USUARIO/tokomagraf.git"
+# ─────────────────────────────────────────────────────────
 echo -e "${YELLOW}[1]${NC} Clonando tokomagraf..."
 if [ -d "tokomagraf" ]; then
     echo "  La carpeta tokomagraf ya existe, actualizando..."
