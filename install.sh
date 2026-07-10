@@ -68,8 +68,10 @@ if [ ! -f .env ]; then
     # Generar secretos automáticos
     DB_PASS=$(openssl rand -hex 16 2>/dev/null || cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 32)
     JWT_SECRET=$(openssl rand -hex 32 2>/dev/null || cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 64)
+    REDIS_PASS=$(openssl rand -hex 16 2>/dev/null || cat /dev/urandom | tr -dc 'a-zA-Z0-9' | head -c 32)
     sed -i "s/cambiame-por-una-contrasena-segura/${DB_PASS}/" .env
     sed -i "s/cambiame-por-un-secreto-largo-y-aleatorio/${JWT_SECRET}/" .env
+    sed -i "s/cambiame-por-una-contrasena-segura-redis/${REDIS_PASS}/" .env
     echo -e "  ${GREEN}✓${NC} Archivo .env creado con secretos aleatorios"
 else
     echo -e "  ${GREEN}✓${NC} Archivo .env ya existe"
@@ -81,7 +83,13 @@ echo ""
 echo "  Si tenés un dominio, Caddy obtiene SSL automático (HTTPS)."
 echo "  Si no, se usa HTTP simple con la IP del servidor."
 echo ""
-read -p "  ¿Tenés un dominio? (dejá vacío para usar solo IP): " DOMAIN < /dev/tty
+DOMAIN=""
+# Intentar leer desde terminal interactivo; si no hay terminal, seguir sin dominio
+if [ -t 0 ]; then
+    read -p "  ¿Tenés un dominio? (dejá vacío para usar solo IP): " DOMAIN
+elif [ -e /dev/tty ]; then
+    read -p "  ¿Tenés un dominio? (dejá vacío para usar solo IP): " DOMAIN < /dev/tty 2>/dev/null || true
+fi
 if [ -n "$DOMAIN" ]; then
     # Ensure domain doesn't have http:// prefix
     DOMAIN=$(echo "$DOMAIN" | sed 's|^https\?://||' | sed 's|/.*||')

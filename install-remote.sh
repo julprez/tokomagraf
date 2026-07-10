@@ -13,6 +13,7 @@ set -e
 GREEN='\033[0;32m'
 YELLOW='\033[1;33m'
 CYAN='\033[0;36m'
+RED='\033[0;31m'
 NC='\033[0m'
 
 echo -e "${CYAN}"
@@ -76,7 +77,13 @@ if [ -d "tokomagraf" ]; then
     echo "  La carpeta tokomagraf ya existe, actualizando..."
     cd tokomagraf && git pull
 else
-    git clone "$REPO_URL" tokomagraf
+    echo "  Clonando repositorio..."
+    if ! git clone "$REPO_URL" tokomagraf; then
+        echo -e "  ${RED}ERROR${NC}: No se pudo clonar el repositorio."
+        echo "    Verificá que la URL sea correcta y que el VPS tenga acceso a GitHub."
+        echo "    URL: $REPO_URL"
+        exit 1
+    fi
     cd tokomagraf
 fi
 
